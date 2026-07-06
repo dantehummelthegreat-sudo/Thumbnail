@@ -7,14 +7,41 @@ import { exampleThumbs } from './lib/examples'
 
 const MAX_THUMBS = 3
 
+// Primary view switcher — big, obvious, top-left.
+function MainTab({ active, onClick, label, sub, icon }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors ${
+        active
+          ? 'border-neutral-900 bg-neutral-900 text-white shadow-sm dark:border-neutral-100 dark:bg-neutral-100 dark:text-black'
+          : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-neutral-100'
+      }`}
+    >
+      {icon}
+      <span>{label}</span>
+      <span
+        className={`hidden text-xs font-normal sm:block ${
+          active ? 'text-neutral-400 dark:text-neutral-500' : 'text-neutral-400 dark:text-neutral-600'
+        }`}
+      >
+        {sub}
+      </span>
+    </button>
+  )
+}
+
 export default function App() {
   // First load shows a built-in weak-vs-strong example, already scored.
   const [thumbs, setThumbs] = useState(exampleThumbs)
+  // top-level view: scores front and center, or the YouTube context previews
+  const [mainView, setMainView] = useState('feedback')
   const [view, setView] = useState('overview')
   const [device, setDevice] = useState('desktop')
   const [theme, setTheme] = useState('dark')
   const [squint, setSquint] = useState(false)
-  const [contextOpen, setContextOpen] = useState(true)
 
   const addFiles = (fileList) => {
     const images = Array.from(fileList).filter((f) => f.type.startsWith('image/'))
@@ -74,76 +101,78 @@ export default function App() {
           </div>
         </header>
 
-        <main className="mx-auto flex max-w-[1320px] flex-col gap-8 px-4 py-6 sm:px-6">
+        <main className="mx-auto flex max-w-[1320px] flex-col gap-6 px-4 py-6 sm:px-6">
+          <nav className="flex flex-wrap items-center gap-2" aria-label="Main view">
+            <MainTab
+              active={mainView === 'feedback'}
+              onClick={() => setMainView('feedback')}
+              label="Feedback"
+              sub="scores & checks"
+              icon={
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-4.5" aria-hidden="true">
+                  <path d="M12 21a9 9 0 1 1 9-9" strokeLinecap="round" />
+                  <path d="m12 12 4.5-4.5" strokeLinecap="round" />
+                  <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+                </svg>
+              }
+            />
+            <MainTab
+              active={mainView === 'context'}
+              onClick={() => setMainView('context')}
+              label="Context"
+              sub="inside YouTube"
+              icon={
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-4.5" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="14" rx="3" />
+                  <path d="m10.5 9.5 4 2.5-4 2.5z" fill="currentColor" stroke="none" />
+                </svg>
+              }
+            />
+          </nav>
+
           <UploadStrip thumbs={thumbs} addFiles={addFiles} clearExamples={clearExamples} />
 
-          {thumbs.length > 0 ? (
-            <section className="flex flex-wrap items-start justify-center gap-6">
-              {thumbs.map((t, i) => (
-                <ThumbCard
-                  key={t.id}
-                  thumb={t}
-                  index={i}
-                  count={thumbs.length}
-                  updateThumb={updateThumb}
-                  removeThumb={removeThumb}
-                />
-              ))}
-            </section>
+          {mainView === 'feedback' ? (
+            thumbs.length > 0 ? (
+              <section className="flex flex-wrap items-start justify-center gap-6">
+                {thumbs.map((t, i) => (
+                  <ThumbCard
+                    key={t.id}
+                    thumb={t}
+                    index={i}
+                    count={thumbs.length}
+                    updateThumb={updateThumb}
+                    removeThumb={removeThumb}
+                  />
+                ))}
+              </section>
+            ) : (
+              <section className="rounded-2xl border-2 border-dashed border-neutral-200 py-16 text-center dark:border-neutral-800">
+                <p className="text-lg font-semibold text-neutral-500 dark:text-neutral-400">
+                  Upload a thumbnail to get its score
+                </p>
+                <p className="mt-1 text-sm text-neutral-400 dark:text-neutral-500">
+                  Contrast, mobile readability, edge safety, and aspect ratio — measured right
+                  here in your browser.
+                </p>
+              </section>
+            )
           ) : (
-            <section className="rounded-2xl border-2 border-dashed border-neutral-200 py-16 text-center dark:border-neutral-800">
-              <p className="text-lg font-semibold text-neutral-500 dark:text-neutral-400">
-                Upload a thumbnail to get its score
-              </p>
-              <p className="mt-1 text-sm text-neutral-400 dark:text-neutral-500">
-                Contrast, mobile readability, edge safety, and aspect ratio — measured right here
-                in your browser.
-              </p>
+            <section className="mx-auto w-full max-w-[1160px]">
+              <Toolbar
+                view={view}
+                setView={setView}
+                device={device}
+                setDevice={setDevice}
+                theme={theme}
+                setTheme={setTheme}
+                squint={squint}
+                setSquint={setSquint}
+                compareEnabled={thumbs.length >= 2}
+              />
+              <PreviewCanvas view={view} device={device} thumbs={thumbs} squint={squint} />
             </section>
           )}
-
-          <section>
-            <button
-              type="button"
-              onClick={() => setContextOpen(!contextOpen)}
-              aria-expanded={contextOpen}
-              className="flex w-full items-center gap-2 text-left"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className={`size-4 text-neutral-400 transition-transform ${contextOpen ? 'rotate-90' : ''}`}
-                aria-hidden="true"
-              >
-                <path d="m9 6 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span className="text-sm font-bold tracking-widest text-neutral-400 uppercase dark:text-neutral-500">
-                See it in context
-              </span>
-              <span className="hidden text-xs text-neutral-400 sm:block dark:text-neutral-600">
-                — how it looks inside YouTube: home, search, up next, mobile
-              </span>
-            </button>
-
-            {contextOpen && (
-              <div className="mx-auto mt-4 w-full max-w-[1080px]">
-                <Toolbar
-                  view={view}
-                  setView={setView}
-                  device={device}
-                  setDevice={setDevice}
-                  theme={theme}
-                  setTheme={setTheme}
-                  squint={squint}
-                  setSquint={setSquint}
-                  compareEnabled={thumbs.length >= 2}
-                />
-                <PreviewCanvas view={view} device={device} thumbs={thumbs} squint={squint} />
-              </div>
-            )}
-          </section>
         </main>
 
         <footer className="pb-6 text-center text-xs text-neutral-500 dark:text-neutral-500">

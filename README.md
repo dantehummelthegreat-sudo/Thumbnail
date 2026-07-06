@@ -38,8 +38,9 @@ model via a small serverless function.
     downscaling to the smallest real render size
   - *Edge safety*: detail density in the outer 8% border vs. the center
   - *Aspect ratio*: distance from 16:9
-- **"See it in context" panel** — the YouTube layout previews live in a
-  collapsible secondary section below the score cards.
+- **Two top-level views** — a Feedback / Context switcher at the top-left.
+  *Feedback* (the default) shows the score cards; *Context* shows the YouTube
+  layout previews with all their tabs. The upload strip stays visible in both.
 - **Side-by-side A/B compare** when you have more than one version.
 - **AI critique (optional)** — a "Get AI critique" button per thumbnail that
   asks Claude for blunt, specific feedback (score, verdict, problems, fixes).
