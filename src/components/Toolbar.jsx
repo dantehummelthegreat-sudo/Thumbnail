@@ -1,4 +1,5 @@
 const VIEWS = [
+  { id: 'overview', label: 'Overview' },
   { id: 'home', label: 'Home' },
   { id: 'search', label: 'Search' },
   { id: 'sidebar', label: 'Up next' },
@@ -37,8 +38,13 @@ export default function Toolbar({
   setDevice,
   theme,
   setTheme,
+  squint,
+  setSquint,
   compareEnabled,
 }) {
+  // Overview shows both devices at once; Compare is desktop-only.
+  const deviceLocked = view === 'compare' || view === 'overview'
+
   return (
     <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-3">
       <Segmented
@@ -55,16 +61,37 @@ export default function Toolbar({
         )}
       />
       <div className="ml-auto flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => setSquint(!squint)}
+          aria-pressed={squint}
+          title="Blurs every thumbnail to simulate a split-second glance from the corner of the eye — if yours still reads, it's strong."
+          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+            squint
+              ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black'
+              : 'bg-neutral-200 text-neutral-600 hover:text-neutral-900 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-100'
+          }`}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-4" aria-hidden="true">
+            <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z" />
+            <circle cx="12" cy="12" r="2.5" />
+          </svg>
+          Squint test
+        </button>
         <Segmented
-          value={view === 'compare' ? 'desktop' : device}
+          value={deviceLocked ? 'desktop' : device}
           onChange={setDevice}
           options={[
-            { id: 'desktop', label: 'Desktop', disabled: view === 'compare' },
+            { id: 'desktop', label: 'Desktop', disabled: deviceLocked },
             {
               id: 'mobile',
               label: 'Mobile',
-              disabled: view === 'compare',
-              hint: view === 'compare' ? 'Compare is desktop-only' : undefined,
+              disabled: deviceLocked,
+              hint: deviceLocked
+                ? view === 'overview'
+                  ? 'Overview already shows mobile'
+                  : 'Compare is desktop-only'
+                : undefined,
             },
           ]}
         />

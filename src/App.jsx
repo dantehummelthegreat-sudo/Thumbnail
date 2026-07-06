@@ -2,25 +2,33 @@ import { useState } from 'react'
 import UploadPanel from './components/UploadPanel'
 import Toolbar from './components/Toolbar'
 import PreviewCanvas from './components/preview/PreviewCanvas'
+import { exampleThumbs } from './lib/examples'
 
 const MAX_THUMBS = 3
 
 export default function App() {
-  const [thumbs, setThumbs] = useState([])
-  const [view, setView] = useState('home')
+  // First load shows a built-in weak-vs-strong example, already scored.
+  const [thumbs, setThumbs] = useState(exampleThumbs)
+  const [view, setView] = useState('overview')
   const [device, setDevice] = useState('desktop')
   const [theme, setTheme] = useState('dark')
+  const [squint, setSquint] = useState(false)
 
   const addFiles = (fileList) => {
     const images = Array.from(fileList).filter((f) => f.type.startsWith('image/'))
-    const room = MAX_THUMBS - thumbs.length
+    // A real upload replaces the example set entirely.
+    const base = thumbs.some((t) => t.isExample) ? [] : thumbs
+    const room = MAX_THUMBS - base.length
     const added = images.slice(0, room).map((f) => ({
       id: crypto.randomUUID(),
       url: URL.createObjectURL(f),
       title: '',
       channel: '',
     }))
-    if (added.length) setThumbs([...thumbs, ...added])
+    if (!added.length) return
+    const next = [...base, ...added]
+    setThumbs(next)
+    if (view === 'compare' && next.length < 2) setView('overview')
   }
 
   const updateThumb = (id, patch) =>
@@ -28,10 +36,15 @@ export default function App() {
 
   const removeThumb = (id) => {
     const t = thumbs.find((x) => x.id === id)
-    if (t) URL.revokeObjectURL(t.url)
+    if (t && !t.isExample) URL.revokeObjectURL(t.url)
     const next = thumbs.filter((x) => x.id !== id)
     setThumbs(next)
-    if (view === 'compare' && next.length < 2) setView('home')
+    if (view === 'compare' && next.length < 2) setView('overview')
+  }
+
+  const clearExamples = () => {
+    setThumbs([])
+    if (view === 'compare') setView('overview')
   }
 
   return (
@@ -54,7 +67,7 @@ export default function App() {
                 <rect x="5" y="11" width="14" height="9" rx="2" />
                 <path d="M8 11V8a4 4 0 0 1 8 0v3" />
               </svg>
-              100% private — images never leave your browser
+              Private — images stay in your browser
             </span>
           </div>
         </header>
@@ -65,6 +78,7 @@ export default function App() {
             addFiles={addFiles}
             updateThumb={updateThumb}
             removeThumb={removeThumb}
+            clearExamples={clearExamples}
           />
           <section className="min-w-0">
             <Toolbar
@@ -74,14 +88,17 @@ export default function App() {
               setDevice={setDevice}
               theme={theme}
               setTheme={setTheme}
+              squint={squint}
+              setSquint={setSquint}
               compareEnabled={thumbs.length >= 2}
             />
-            <PreviewCanvas view={view} device={device} thumbs={thumbs} />
+            <PreviewCanvas view={view} device={device} thumbs={thumbs} squint={squint} />
           </section>
         </main>
 
         <footer className="pb-6 text-center text-xs text-neutral-500 dark:text-neutral-500">
-          ThumbTest runs entirely in your browser. Not affiliated with YouTube.
+          ThumbTest runs in your browser — images are only sent anywhere if you explicitly request
+          an AI critique. Not affiliated with YouTube.
         </footer>
       </div>
     </div>

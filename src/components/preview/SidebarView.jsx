@@ -17,7 +17,7 @@ function PlayerPlaceholder({ mobile }) {
   )
 }
 
-function CompactRow({ item }) {
+export function CompactRow({ item }) {
   return (
     <div className="flex gap-2">
       <div className="w-[168px] shrink-0">

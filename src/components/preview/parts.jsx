@@ -1,6 +1,20 @@
 // Shared building blocks for the YouTube preview layouts.
+import { useSquint } from './SquintContext'
+
+export function PhoneFrame({ children, height = 'h-[700px]' }) {
+  return (
+    <div className="flex justify-center">
+      <div className="w-[375px] max-w-full overflow-hidden rounded-[36px] border-8 border-neutral-900 bg-white shadow-2xl dark:border-neutral-700 dark:bg-[#0f0f0f]">
+        <div className={`phone-scroll overflow-y-auto overscroll-contain ${height}`}>
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export function Thumb({ item, rounded = 'rounded-xl', className = '' }) {
+  const squint = useSquint()
   if (item.kind === 'empty') {
     return (
       <div
@@ -20,7 +34,9 @@ export function Thumb({ item, rounded = 'rounded-xl', className = '' }) {
         <img
           src={item.url}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+          className={`absolute inset-0 h-full w-full object-cover ${
+            squint ? 'scale-110 blur-[7px]' : ''
+          }`}
         />
       )}
       {item.duration && (

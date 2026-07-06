@@ -3,22 +3,39 @@
 A free YouTube thumbnail previewer. Upload your thumbnail designs and instantly
 see how they'll look inside realistic YouTube layouts — before you publish.
 
-Everything runs client-side in your browser. No backend, no database, no login.
-Uploaded images never leave your machine.
+The app runs client-side in your browser: no backend, no database, no login.
+Images stay in the browser — the only exception is the optional **AI critique**
+button, which (only when you click it) sends that one image to an AI vision
+model via a small serverless function.
 
 ## Features
 
+- **Built-in example on load** — a deliberately weak thumbnail next to a strong
+  one, already scored, so you see what the tool does before uploading anything.
+  One click clears it.
 - **Upload 1–3 thumbnails** via drag-and-drop or file picker, with an editable
   video title and channel name for each.
-- **Three preview layouts**, styled to match YouTube's real proportions and
+- **Overview tab** — every layout at once on one scrollable page.
+- **Four YouTube layouts**, styled to match YouTube's real proportions and
   spacing (surrounding videos are gray placeholders with fake titles — no real
-  YouTube data is fetched):
-  - Search results
-  - Homepage grid
-  - Watch-page "Up next" sidebar
+  YouTube data is fetched): homepage grid, search results, watch-page
+  "Up next" sidebar, and the mobile feed.
 - **Desktop / Mobile toggle** — see how readable your thumbnail is at phone size.
 - **Dark / Light mode toggle** — YouTube has both, so preview against both.
-- **Side-by-side A/B compare** when you upload more than one version.
+- **Squint test** — blurs every thumbnail to simulate a split-second glance;
+  if yours still reads, it's strong.
+- **Rule-based scorecard** — four honest, pixel-measured checks per thumbnail,
+  computed on a canvas in the browser (no AI, no network):
+  - *Contrast*: luminance spread (P95 − P5 of linear luminance)
+  - *Mobile readability*: contrast + how much edge structure survives
+    downscaling to the smallest real render size
+  - *Edge safety*: detail density in the outer 8% border vs. the center
+  - *Aspect ratio*: distance from 16:9
+- **Side-by-side A/B compare** when you have more than one version.
+- **AI critique (optional)** — a "Get AI critique" button per thumbnail that
+  asks Claude for blunt, specific feedback (score, verdict, problems, fixes).
+  Works only when an API key is configured server-side; without one the button
+  shows a friendly "not set up yet" note and everything else works normally.
 
 ## Development
 
@@ -29,8 +46,24 @@ npm run build    # production build to dist/
 npm run lint     # oxlint
 ```
 
+## Enabling the AI critique
+
+The key lives **only** in a server-side environment variable — it is never in
+the browser bundle (no `VITE_` prefix, no client code touches it).
+
+- **Local dev**: copy `.env.example` to `.env`, set `ANTHROPIC_API_KEY`, and
+  restart `npm run dev`. A Vite dev-server middleware serves `POST
+  /api/critique` using the same handler as production.
+- **Deployed**: `api/critique.js` is a standard Vercel-style serverless
+  function — deploy the repo to Vercel and set `ANTHROPIC_API_KEY` in the
+  project's environment settings. (`vite preview` serves only the static build,
+  not `/api` — use `npm run dev` or a real deployment to exercise the critique.)
+
+The exact instruction sent to the model lives in
+`api/_lib/critique-core.js` (`CRITIQUE_PROMPT`).
+
 ## Stack
 
-React + Vite + Tailwind CSS. No other runtime dependencies.
+React + Vite + Tailwind CSS; `@anthropic-ai/sdk` server-side only.
 
 Not affiliated with YouTube.
