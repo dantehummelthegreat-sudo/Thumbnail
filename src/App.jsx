@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import UploadPanel from './components/UploadPanel'
+import UploadStrip from './components/UploadStrip'
+import ThumbCard from './components/ThumbCard'
 import Toolbar from './components/Toolbar'
 import PreviewCanvas from './components/preview/PreviewCanvas'
 import { exampleThumbs } from './lib/examples'
@@ -13,6 +14,7 @@ export default function App() {
   const [device, setDevice] = useState('desktop')
   const [theme, setTheme] = useState('dark')
   const [squint, setSquint] = useState(false)
+  const [contextOpen, setContextOpen] = useState(true)
 
   const addFiles = (fileList) => {
     const images = Array.from(fileList).filter((f) => f.type.startsWith('image/'))
@@ -51,7 +53,7 @@ export default function App() {
     <div className={theme === 'dark' ? 'dark' : ''}>
       <div className="min-h-screen bg-neutral-100 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
         <header className="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
-          <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-4 sm:px-6">
+          <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-4 sm:px-6">
             <div className="flex items-center gap-2">
               <svg viewBox="0 0 28 28" className="size-7" aria-hidden="true">
                 <rect width="28" height="28" rx="7" fill="#FF0033" />
@@ -60,7 +62,7 @@ export default function App() {
               <span className="text-xl font-bold tracking-tight">ThumbTest</span>
             </div>
             <p className="hidden text-sm text-neutral-500 sm:block dark:text-neutral-400">
-              Preview your YouTube thumbnails before you publish
+              Score your YouTube thumbnails before you publish
             </p>
             <span className="ml-auto flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-3.5" aria-hidden="true">
@@ -72,27 +74,75 @@ export default function App() {
           </div>
         </header>
 
-        <main className="mx-auto grid max-w-[1440px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[340px_minmax(0,1fr)]">
-          <UploadPanel
-            thumbs={thumbs}
-            addFiles={addFiles}
-            updateThumb={updateThumb}
-            removeThumb={removeThumb}
-            clearExamples={clearExamples}
-          />
-          <section className="min-w-0">
-            <Toolbar
-              view={view}
-              setView={setView}
-              device={device}
-              setDevice={setDevice}
-              theme={theme}
-              setTheme={setTheme}
-              squint={squint}
-              setSquint={setSquint}
-              compareEnabled={thumbs.length >= 2}
-            />
-            <PreviewCanvas view={view} device={device} thumbs={thumbs} squint={squint} />
+        <main className="mx-auto flex max-w-[1320px] flex-col gap-8 px-4 py-6 sm:px-6">
+          <UploadStrip thumbs={thumbs} addFiles={addFiles} clearExamples={clearExamples} />
+
+          {thumbs.length > 0 ? (
+            <section className="flex flex-wrap items-start justify-center gap-6">
+              {thumbs.map((t, i) => (
+                <ThumbCard
+                  key={t.id}
+                  thumb={t}
+                  index={i}
+                  count={thumbs.length}
+                  updateThumb={updateThumb}
+                  removeThumb={removeThumb}
+                />
+              ))}
+            </section>
+          ) : (
+            <section className="rounded-2xl border-2 border-dashed border-neutral-200 py-16 text-center dark:border-neutral-800">
+              <p className="text-lg font-semibold text-neutral-500 dark:text-neutral-400">
+                Upload a thumbnail to get its score
+              </p>
+              <p className="mt-1 text-sm text-neutral-400 dark:text-neutral-500">
+                Contrast, mobile readability, edge safety, and aspect ratio — measured right here
+                in your browser.
+              </p>
+            </section>
+          )}
+
+          <section>
+            <button
+              type="button"
+              onClick={() => setContextOpen(!contextOpen)}
+              aria-expanded={contextOpen}
+              className="flex w-full items-center gap-2 text-left"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className={`size-4 text-neutral-400 transition-transform ${contextOpen ? 'rotate-90' : ''}`}
+                aria-hidden="true"
+              >
+                <path d="m9 6 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="text-sm font-bold tracking-widest text-neutral-400 uppercase dark:text-neutral-500">
+                See it in context
+              </span>
+              <span className="hidden text-xs text-neutral-400 sm:block dark:text-neutral-600">
+                — how it looks inside YouTube: home, search, up next, mobile
+              </span>
+            </button>
+
+            {contextOpen && (
+              <div className="mx-auto mt-4 w-full max-w-[1080px]">
+                <Toolbar
+                  view={view}
+                  setView={setView}
+                  device={device}
+                  setDevice={setDevice}
+                  theme={theme}
+                  setTheme={setTheme}
+                  squint={squint}
+                  setSquint={setSquint}
+                  compareEnabled={thumbs.length >= 2}
+                />
+                <PreviewCanvas view={view} device={device} thumbs={thumbs} squint={squint} />
+              </div>
+            )}
           </section>
         </main>
 

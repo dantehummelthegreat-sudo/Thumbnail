@@ -1,16 +1,21 @@
 import { useState } from 'react'
 import { requestCritique } from '../lib/critique'
+import { scoreBand } from '../lib/analyze'
 
-// "Get AI critique" button + result panel for one thumbnail. All state is
-// local; a removed thumbnail simply unmounts its panel.
-export default function CritiquePanel({ thumb }) {
+// "Get AI critique" button + result panel for one thumbnail. State is local;
+// onDone reports the critique up so the card can blend the AI score into the
+// headline number.
+export default function CritiquePanel({ thumb, onDone }) {
   const [state, setState] = useState({ phase: 'idle' })
 
   const run = async () => {
     setState({ phase: 'loading' })
+    onDone?.(null)
     const result = await requestCritique(thumb)
-    if (result.status === 'ok') setState({ phase: 'done', critique: result.critique })
-    else if (result.status === 'unconfigured') setState({ phase: 'unconfigured' })
+    if (result.status === 'ok') {
+      setState({ phase: 'done', critique: result.critique })
+      onDone?.(result.critique)
+    } else if (result.status === 'unconfigured') setState({ phase: 'unconfigured' })
     else setState({ phase: 'error', message: result.message })
   }
 
@@ -58,18 +63,12 @@ export default function CritiquePanel({ thumb }) {
         <div className="rounded-lg bg-neutral-100 p-3 dark:bg-neutral-800">
           <div className="flex items-center gap-2">
             <span
-              className={`rounded px-1.5 py-0.5 text-[11px] font-bold text-white ${
-                state.critique.score >= 7
-                  ? 'bg-emerald-600'
-                  : state.critique.score >= 4
-                    ? 'bg-amber-500'
-                    : 'bg-red-600'
-              }`}
+              className={`rounded px-1.5 py-0.5 text-[11px] font-bold text-white ${scoreBand(state.critique.score * 10).chip}`}
             >
-              {state.critique.score}/10
+              {state.critique.score * 10}/100
             </span>
             <span className="text-[11px] font-semibold tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
-              AI critique
+              AI critique · {scoreBand(state.critique.score * 10).label}
             </span>
           </div>
           <p className="mt-2 text-xs leading-5 font-medium text-neutral-800 dark:text-neutral-200">

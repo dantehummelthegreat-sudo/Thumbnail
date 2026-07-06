@@ -24,13 +24,22 @@ model via a small serverless function.
 - **Dark / Light mode toggle** — YouTube has both, so preview against both.
 - **Squint test** — blurs every thumbnail to simulate a split-second glance;
   if yours still reads, it's strong.
+- **Overall 0–100 score** — the centerpiece of each thumbnail's card: a big
+  number in a colored ring with a band label (90+ Excellent, 75+ Good,
+  60+ Okay, 40+ Weak, below 40 Poor). It's a weighted blend of the four
+  rule-based checks — contrast and mobile readability carry 35% each (they
+  matter most in the feed), edge safety 20%, aspect ratio 10%. When the AI
+  critique runs, its 1–10 score is converted to the same scale and blended
+  50/50 into the headline number, with both components shown.
 - **Rule-based scorecard** — four honest, pixel-measured checks per thumbnail,
-  computed on a canvas in the browser (no AI, no network):
+  each scored 0–100 on a canvas in the browser (no AI, no network):
   - *Contrast*: luminance spread (P95 − P5 of linear luminance)
   - *Mobile readability*: contrast + how much edge structure survives
     downscaling to the smallest real render size
   - *Edge safety*: detail density in the outer 8% border vs. the center
   - *Aspect ratio*: distance from 16:9
+- **"See it in context" panel** — the YouTube layout previews live in a
+  collapsible secondary section below the score cards.
 - **Side-by-side A/B compare** when you have more than one version.
 - **AI critique (optional)** — a "Get AI critique" button per thumbnail that
   asks Claude for blunt, specific feedback (score, verdict, problems, fixes).

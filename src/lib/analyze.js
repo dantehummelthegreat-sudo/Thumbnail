@@ -1,7 +1,43 @@
 // Rule-based thumbnail analysis. Runs entirely in the browser on a canvas —
 // real pixel measurements, no AI, no network.
 //
-// Levels: 'green' (good) | 'yellow' (borderline) | 'red' (problem).
+// Each check produces a continuous 0–100 score via piecewise-linear ramps over
+// the raw metrics; its traffic-light level is derived from that score
+// (>=75 green, >=50 yellow, else red), so number and color never disagree.
+// The overall score is a weighted blend — contrast and mobile readability
+// matter most in the feed, so they carry the most weight.
+
+const WEIGHTS = { contrast: 0.35, mobile: 0.35, edges: 0.2, aspect: 0.1 }
+
+// Piecewise-linear interpolation through [x, y] anchor points (ascending x).
+function ramp(v, pts) {
+  if (v <= pts[0][0]) return pts[0][1]
+  for (let i = 1; i < pts.length; i++) {
+    if (v <= pts[i][0]) {
+      const [x0, y0] = pts[i - 1]
+      const [x1, y1] = pts[i]
+      return y0 + ((v - x0) / (x1 - x0)) * (y1 - y0)
+    }
+  }
+  return pts[pts.length - 1][1]
+}
+
+function levelOf(score) {
+  return score >= 75 ? 'green' : score >= 50 ? 'yellow' : 'red'
+}
+
+// The 0–100 → band mapping used everywhere a score is displayed.
+export function scoreBand(score) {
+  if (score >= 90)
+    return { label: 'Excellent', hex: '#047857', text: 'text-emerald-700 dark:text-emerald-500', chip: 'bg-emerald-700' }
+  if (score >= 75)
+    return { label: 'Good', hex: '#22c55e', text: 'text-green-600 dark:text-green-400', chip: 'bg-green-500' }
+  if (score >= 60)
+    return { label: 'Okay', hex: '#f59e0b', text: 'text-amber-600 dark:text-amber-400', chip: 'bg-amber-500' }
+  if (score >= 40)
+    return { label: 'Weak', hex: '#f97316', text: 'text-orange-600 dark:text-orange-400', chip: 'bg-orange-500' }
+  return { label: 'Poor', hex: '#dc2626', text: 'text-red-600 dark:text-red-500', chip: 'bg-red-600' }
+}
 
 // sRGB channel → linear light
 function lin(c) {
@@ -117,47 +153,99 @@ export async function analyzeImage(url) {
   const marginBusy = g160.margin
   const centerBusy = g160.center
 
-  // ---- the four checks ----
+  // ---- the four checks, scored 0–100 ----
+  // Ramp anchors are pinned to the calibrated traffic-light thresholds:
+  // the old red/yellow boundary maps to 50, yellow/green to 75.
 
-  const contrast =
-    range >= 0.5
-      ? { level: 'green', note: 'Strong light–dark separation — it will pop in the feed.' }
-      : range >= 0.22
-        ? { level: 'yellow', note: 'Moderate contrast — could stand out more against busy feeds.' }
-        : { level: 'red', note: 'Very low contrast — it will fade into the page around it.' }
+  const contrastScore = ramp(range, [
+    [0.05, 10],
+    [0.22, 50],
+    [0.5, 75],
+    [0.8, 100],
+  ])
 
-  const mobile =
-    range < 0.22 || survival < 0.45
-      ? { level: 'red', note: 'Weak contrast or fine detail — it will turn to mush at phone size.' }
-      : range >= 0.4 && survival >= 0.62
-        ? { level: 'green', note: 'Bold shapes and strong contrast should survive phone size.' }
-        : { level: 'yellow', note: 'Some detail may get lost when shrunk to a phone screen.' }
+  // weakest link of contrast and structure survival at small size
+  const mobileScore = Math.min(
+    ramp(range, [
+      [0.05, 5],
+      [0.22, 50],
+      [0.4, 75],
+      [0.7, 100],
+    ]),
+    ramp(survival, [
+      [0.2, 10],
+      [0.45, 50],
+      [0.62, 75],
+      [0.95, 100],
+    ]),
+  )
 
-  const edges =
-    marginBusy > 0.09 || (marginBusy > centerBusy * 1.3 && marginBusy > 0.035)
-      ? { level: 'red', note: 'Busy detail sits right at the borders — crops and corner rounding will eat it.' }
-      : marginBusy <= 0.035
-        ? { level: 'green', note: 'Borders are clean — safe from crops and rounded corners.' }
-        : { level: 'yellow', note: 'Some content sits close to the borders — keep key elements away from edges.' }
+  let edgeScore = ramp(marginBusy, [
+    [0, 100],
+    [0.035, 75],
+    [0.09, 50],
+    [0.15, 20],
+  ])
+  // borders busier than the interior → content is jammed against the edges
+  if (marginBusy > centerBusy * 1.3 && marginBusy > 0.035) edgeScore = Math.min(edgeScore, 45)
 
   const target = 16 / 9
   const ar = img.naturalWidth / img.naturalHeight
   const dev = Math.abs(ar - target) / target
+  const aspectScore = ramp(dev, [
+    [0, 100],
+    [0.02, 76],
+    [0.1, 50],
+    [0.3, 10],
+  ])
+
   const dims = `${img.naturalWidth}×${img.naturalHeight}`
-  const aspect =
-    dev <= 0.02
-      ? { level: 'green', note: `16:9 (${dims}) — displays without cropping.` }
-      : dev <= 0.1
-        ? { level: 'yellow', note: `Slightly off 16:9 (${dims}) — minor cropping at the edges.` }
-        : { level: 'red', note: `Not 16:9 (${dims}) — YouTube will crop it significantly.` }
+  const NOTES = {
+    contrast: {
+      green: 'Strong light–dark separation — it will pop in the feed.',
+      yellow: 'Moderate contrast — could stand out more against busy feeds.',
+      red: 'Very low contrast — it will fade into the page around it.',
+    },
+    mobile: {
+      green: 'Bold shapes and strong contrast should survive phone size.',
+      yellow: 'Some detail may get lost when shrunk to a phone screen.',
+      red: 'Weak contrast or fine detail — it will turn to mush at phone size.',
+    },
+    edges: {
+      green: 'Borders are clean — safe from crops and rounded corners.',
+      yellow: 'Some content sits close to the borders — keep key elements away from edges.',
+      red: 'Busy detail sits right at the borders — crops and corner rounding will eat it.',
+    },
+    aspect: {
+      green: `16:9 (${dims}) — displays without cropping.`,
+      yellow: `Slightly off 16:9 (${dims}) — minor cropping at the edges.`,
+      red: `Not 16:9 (${dims}) — YouTube will crop it significantly.`,
+    },
+  }
+
+  const check = (id, label, score) => {
+    const s = Math.round(score)
+    const level = levelOf(s)
+    return { id, label, score: s, level, note: NOTES[id][level] }
+  }
+
+  const checks = [
+    check('contrast', 'Contrast', contrastScore),
+    check('mobile', 'Mobile readability', mobileScore),
+    check('edges', 'Edge safety', edgeScore),
+    check('aspect', 'Aspect ratio', aspectScore),
+  ]
+
+  const score = Math.round(
+    contrastScore * WEIGHTS.contrast +
+      mobileScore * WEIGHTS.mobile +
+      edgeScore * WEIGHTS.edges +
+      aspectScore * WEIGHTS.aspect,
+  )
 
   return {
-    checks: [
-      { id: 'contrast', label: 'Contrast', ...contrast },
-      { id: 'mobile', label: 'Mobile readability', ...mobile },
-      { id: 'edges', label: 'Edge safety', ...edges },
-      { id: 'aspect', label: 'Aspect ratio', ...aspect },
-    ],
+    score,
+    checks,
     // raw metrics, useful for debugging/calibration
     metrics: { range, busy, marginBusy, centerBusy, survival, ar },
   }
