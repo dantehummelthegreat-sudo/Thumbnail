@@ -18,10 +18,13 @@ model via a small serverless function.
 - **Overview tab** — every layout at once on one scrollable page.
 - **Four YouTube layouts**, styled to match YouTube's real proportions and
   spacing: homepage grid, search results, watch-page "Up next" sidebar, and
-  the mobile feed. The surrounding videos are filled from a bundled library of
-  ~100 generated placeholder thumbnails (gaming, vlog, cooking, tech, …) with
-  fake titles, shuffled on every page load — all local assets, no real YouTube
-  data and no network calls.
+  the mobile feed. The surrounding videos are real: thumbnails of well-known
+  videos hot-linked from YouTube's public CDN (`i.ytimg.com`) with their real
+  titles and channel names (from YouTube's oEmbed API), shuffled on every page
+  load. Nothing is bundled or re-hosted — the images load straight from
+  YouTube in the viewer's browser, and if one is unavailable (offline, video
+  removed) the slot falls back to a bundled generated placeholder. View
+  counts and durations in the feed remain invented.
 - **Desktop / Mobile toggle** — see how readable your thumbnail is at phone size.
 - **Dark / Light mode toggle** — YouTube has both, so preview against both.
 - **Squint test** — blurs every thumbnail to simulate a split-second glance;

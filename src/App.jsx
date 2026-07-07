@@ -185,8 +185,9 @@ export default function App() {
         </main>
 
         <footer className="pb-6 text-center text-xs text-neutral-500 dark:text-neutral-500">
-          ThumbTest runs in your browser — images are only sent anywhere if you explicitly request
-          an AI critique. Not affiliated with YouTube.
+          ThumbTest runs in your browser — your images are only sent anywhere if you explicitly
+          request an AI critique. The surrounding feed hot-links public thumbnails from
+          YouTube&rsquo;s CDN. Not affiliated with YouTube.
         </footer>
       </div>
     </div>

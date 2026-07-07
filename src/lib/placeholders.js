@@ -1,6 +1,20 @@
-// Fake surrounding videos, filled from the bundled thumbnail library —
-// no real YouTube data.
+// Surrounding feed videos: real thumbnails hot-linked from YouTube's CDN
+// (validated video IDs in realThumbs.js), with the bundled generated library
+// as an automatic offline/broken-link fallback. View counts and durations
+// below remain invented — only the thumbnail, title, and channel are real.
 import { libraryThumb } from './library'
+import { REAL_VIDEOS, realThumbUrl } from './realThumbs'
+
+function shuffle(arr) {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+// Shuffled once per page load — a different busy feed on every visit.
+const REAL_SHUFFLED = shuffle(REAL_VIDEOS)
 
 export const PLACEHOLDER_VIDEOS = [
   {
@@ -151,7 +165,17 @@ export function buildFeed(thumbs, { count, start = 1, gap = 3 }) {
   const items = []
   for (let i = 0; i < count; i++) {
     const v = PLACEHOLDER_VIDEOS[i % PLACEHOLDER_VIDEOS.length]
-    items.push({ kind: 'ph', key: `ph-${i}`, url: libraryThumb(i), ...v })
+    const rv = REAL_SHUFFLED[i % REAL_SHUFFLED.length]
+    items.push({
+      kind: 'ph',
+      key: `ph-${i}`,
+      ...v, // fake meta / duration
+      url: realThumbUrl(rv.id),
+      fallback: libraryThumb(i),
+      title: rv.title,
+      channel: rv.channel,
+      desc: `Official upload from ${rv.channel}. Watch the full video on YouTube.`,
+    })
   }
   if (thumbs.length === 0) {
     items[Math.min(start, count - 1)] = emptyItem()

@@ -34,6 +34,14 @@ export function Thumb({ item, rounded = 'rounded-xl', className = '' }) {
         <img
           src={item.url}
           alt=""
+          loading="lazy"
+          onError={(e) => {
+            // hot-linked thumbnail unavailable (offline / video gone) →
+            // fall back to the bundled generated placeholder
+            if (item.fallback && !e.currentTarget.src.endsWith(item.fallback)) {
+              e.currentTarget.src = item.fallback
+            }
+          }}
           className={`absolute inset-0 h-full w-full object-cover ${
             squint ? 'scale-110 blur-[7px]' : ''
           }`}

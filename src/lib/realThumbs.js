@@ -1,0 +1,63 @@
+// Real videos currently live on YouTube, validated at build time via
+// YouTube's public oEmbed API. Only the video IDs plus factual metadata
+// (title, channel) are stored here — the thumbnail images themselves are
+// hot-linked from YouTube's CDN at display time and are never bundled with
+// the app. Regenerate with scratchpad tooling if entries go stale.
+export const REAL_VIDEOS = [
+  { id: "dQw4w9WgXcQ", title: "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)", channel: "Rick Astley" },
+  { id: "9bZkp7q19f0", title: "PSY - GANGNAM STYLE(강남스타일) M/V", channel: "officialpsy" },
+  { id: "kJQP7kiw5Fk", title: "Luis Fonsi - Despacito ft. Daddy Yankee", channel: "LuisFonsiVEVO" },
+  { id: "RgKAFK5djSk", title: "Wiz Khalifa - See You Again ft. Charlie Puth [Official Video] Furious 7 Soundtrack", channel: "Wiz Khalifa Music" },
+  { id: "OPf0YbXqDm0", title: "Mark Ronson - Uptown Funk (Official Video) ft. Bruno Mars", channel: "MarkRonsonVEVO" },
+  { id: "hTWKbfoikeg", title: "Nirvana - Smells Like Teen Spirit (Official Music Video)", channel: "NirvanaVEVO" },
+  { id: "YQHsXMglC9A", title: "Adele - Hello (Official Music Video)", channel: "Adele" },
+  { id: "CevxZvSJLk8", title: "Katy Perry - Roar", channel: "KatyPerryVEVO" },
+  { id: "09R8_2nJtjg", title: "Maroon 5 - Sugar (Official Music Video)", channel: "Maroon5VEVO" },
+  { id: "hT_nvWreIhg", title: "OneRepublic - Counting Stars", channel: "OneRepublicVEVO" },
+  { id: "pRpeEdMmmQ0", title: "Shakira - Waka Waka (This Time for Africa) (The Official 2010 FIFA World Cup™ Song)", channel: "shakiraVEVO" },
+  { id: "kXYiU_JCYtU", title: "Numb (Official Music Video) [4K UPGRADE] – Linkin Park", channel: "Linkin Park" },
+  { id: "60ItHLz5WEA", title: "Alan Walker - Faded", channel: "Alan Walker" },
+  { id: "lp-EO5I60KA", title: "Ed Sheeran - Thinking Out Loud (Official Music Video)", channel: "Ed Sheeran" },
+  { id: "7wtfhZwyrcc", title: "Imagine Dragons - Believer (Official Music Video)", channel: "ImagineDragonsVEVO" },
+  { id: "ktvTqknDobU", title: "Imagine Dragons - Radioactive", channel: "ImagineDragonsVEVO" },
+  { id: "pXRviuL6vMY", title: "twenty one pilots: Stressed Out [OFFICIAL VIDEO]", channel: "Fueled By Ramen" },
+  { id: "XqZsoesa55w", title: "Baby Shark Dance | #babyshark Most Viewed Video | Animal Songs | PINKFONG Songs for Children", channel: "Baby Shark - Pinkfong Kids’ Songs & Stories" },
+  { id: "kffacxfA7G4", title: "Justin Bieber - Baby ft. Ludacris", channel: "JustinBieberVEVO" },
+  { id: "e-ORhEE9VVg", title: "Taylor Swift - Blank Space", channel: "Taylor Swift" },
+  { id: "nfWlot6h_JM", title: "Taylor Swift - Shake It Off", channel: "Taylor Swift" },
+  { id: "450p7goxZqg", title: "John Legend - All of Me (Official Video)", channel: "johnlegendVEVO" },
+  { id: "YykjpeuMNEk", title: "Coldplay - Hymn For The Weekend (Official Video)", channel: "Coldplay" },
+  { id: "dvgZkm1xWPE", title: "Coldplay - Viva La Vida (Official Video)", channel: "Coldplay" },
+  { id: "1G4isv_Fylg", title: "Coldplay - Paradise (Official Video)", channel: "Coldplay" },
+  { id: "FTQbiNvZqaY", title: "Toto - Africa (Official HD Video)", channel: "TotoVEVO" },
+  { id: "btPJPFnesV4", title: "Survivor - Eye Of The Tiger (Official HD Video)", channel: "SurvivorVEVO" },
+  { id: "L_jWHffIx5E", title: "Smash Mouth - All Star", channel: "SmashMouthVEVO" },
+  { id: "ZbZSe6N_BXs", title: "Pharrell Williams - Happy (Official Video)", channel: "PharrellWilliamsVEVO" },
+  { id: "0e3GPea1Tyg", title: "$456,000 Squid Game In Real Life!", channel: "MrBeast" },
+  { id: "eVTXPUF4Oz4", title: "In The End [Official HD Music Video] - Linkin Park", channel: "Linkin Park" },
+  { id: "8UVNT4wvIGY", title: "Gotye - Somebody That I Used To Know (feat. Kimbra) [Official Music Video]", channel: "Gotye" },
+  { id: "6Ejga4kJUts", title: "The Cranberries - Zombie (Official Music Video)", channel: "TheCranberriesVEVO" },
+  { id: "uelHwf8o7_U", title: "Eminem - Love The Way You Lie ft. Rihanna", channel: "EminemVEVO" },
+  { id: "YVkUvmDQ3HY", title: "Eminem - Without Me (Official Music Video)", channel: "EminemVEVO" },
+  { id: "lWA2pjMjpBs", title: "Rihanna - Diamonds", channel: "RihannaVEVO" },
+  { id: "2vjPBrBU-TM", title: "Sia - Chandelier (Official Video)", channel: "SiaVEVO" },
+  { id: "VYOjWnS4cMY", title: "Childish Gambino - This Is America (Official Video)", channel: "ChildishGambinoVEVO" },
+  { id: "Zi_XLOBDo_Y", title: "Michael Jackson - Billie Jean (Official Video)", channel: "michaeljacksonVEVO" },
+  { id: "h_D3VFfhvs4", title: "Michael Jackson - Smooth Criminal (Official Video)", channel: "michaeljacksonVEVO" },
+  { id: "sOnqjkJTMaA", title: "Michael Jackson - Thriller (Official 4K Video)", channel: "michaeljacksonVEVO" },
+  { id: "rYEDA3JcQqw", title: "Adele - Rolling in the Deep (Official Music Video)", channel: "Adele" },
+  { id: "hLQl3WQQoQ0", title: "Adele - Someone Like You (Official Music Video)", channel: "Adele" },
+  { id: "fWNaR-rxAic", title: "Carly Rae Jepsen - Call Me Maybe", channel: "CarlyRaeJepsenVEVO" },
+  { id: "1k8craCGpgs", title: "Journey - Don't Stop Believin' (Official Audio)", channel: "journeyVEVO" },
+  { id: "fRh_vgS2dFE", title: "Justin Bieber - Sorry (PURPOSE : The Movement)", channel: "JustinBieberVEVO" },
+  { id: "PT2_F-1esPk", title: "The Chainsmokers - Closer (Lyric) ft. Halsey", channel: "ChainsmokersVEVO" },
+  { id: "4NRXx6U8ABQ", title: "The Weeknd - Blinding Lights (Official Video)", channel: "TheWeekndVEVO" },
+  { id: "gdZLi9oWNZg", title: "BTS (방탄소년단) 'Dynamite' Official MV", channel: "HYBE LABELS" },
+  { id: "IcrbM1l_BoI", title: "Avicii - Wake Me Up (Official Video)", channel: "AviciiOfficialVEVO" },
+  { id: "YqeW9_5kURI", title: "Major Lazer & DJ Snake - Lean On (feat. MØ) [Official 4K Music Video]", channel: "Major Lazer Official" },
+  { id: "Ct6BUPvE2sM", title: "PIKOTARO - PPAP (Pen Pineapple Apple Pen) (Long Version) (Official Video) [Ultra Records]", channel: "Ultra Records" },
+]
+
+export function realThumbUrl(id) {
+  return `https://i.ytimg.com/vi/${id}/hq720.jpg`
+}
