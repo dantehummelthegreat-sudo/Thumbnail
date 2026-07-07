@@ -1,4 +1,7 @@
-// Fake surrounding videos. Plain gray thumbnails only — no real YouTube data.
+// Fake surrounding videos, filled from the bundled thumbnail library —
+// no real YouTube data.
+import { libraryThumb } from './library'
+
 export const PLACEHOLDER_VIDEOS = [
   {
     title: 'I Built a Tiny House in 30 Days (Full Timelapse)',
@@ -141,13 +144,14 @@ function emptyItem() {
   }
 }
 
-// A feed of `count` items: gray placeholders with the user's uploads slotted
-// in at spread-out positions (or one dashed empty slot before any upload).
+// A feed of `count` items: library-filled placeholders with the user's uploads
+// slotted in at spread-out positions (or one dashed empty slot before any
+// upload).
 export function buildFeed(thumbs, { count, start = 1, gap = 3 }) {
   const items = []
   for (let i = 0; i < count; i++) {
     const v = PLACEHOLDER_VIDEOS[i % PLACEHOLDER_VIDEOS.length]
-    items.push({ kind: 'ph', key: `ph-${i}`, ...v })
+    items.push({ kind: 'ph', key: `ph-${i}`, url: libraryThumb(i), ...v })
   }
   if (thumbs.length === 0) {
     items[Math.min(start, count - 1)] = emptyItem()

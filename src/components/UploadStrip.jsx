@@ -56,10 +56,12 @@ export default function UploadStrip({ thumbs, addFiles, clearExamples }) {
               : 'cursor-pointer border-neutral-300 bg-white hover:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-neutral-500'
         }`}
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="size-6 text-neutral-400" aria-hidden="true">
-          <path d="M12 16V4m0 0 4 4m-4-4-4 4" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" strokeLinecap="round" />
-        </svg>
+        <span className="flex size-9 items-center justify-center rounded-full bg-red-50 text-[#ff0033] dark:bg-red-500/10 dark:text-red-400">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-5" aria-hidden="true">
+            <path d="M12 16V4m0 0 4 4m-4-4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" strokeLinecap="round" />
+          </svg>
+        </span>
         {full ? (
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Maximum of {MAX_THUMBS} thumbnails — remove one to add another

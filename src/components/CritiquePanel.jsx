@@ -26,7 +26,7 @@ export default function CritiquePanel({ thumb, onDone }) {
           type="button"
           onClick={run}
           disabled={state.phase === 'loading'}
-          className="flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200 disabled:cursor-wait disabled:opacity-60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+          className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-fuchsia-500/30 transition hover:from-violet-500 hover:to-fuchsia-500 disabled:cursor-wait disabled:opacity-60"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={`size-3.5 ${state.phase === 'loading' ? 'animate-spin' : ''}`} aria-hidden="true">
             {state.phase === 'loading' ? (
@@ -71,6 +71,16 @@ export default function CritiquePanel({ thumb, onDone }) {
               AI critique · {scoreBand(state.critique.score * 10).label}
             </span>
           </div>
+          {state.critique.summary && (
+            <div className="mt-2 rounded-r-lg border-l-4 border-fuchsia-500 bg-fuchsia-50/70 px-3 py-2 dark:bg-fuchsia-500/10">
+              <div className="text-[10px] font-bold tracking-widest text-fuchsia-600 uppercase dark:text-fuchsia-400">
+                Feed forecast
+              </div>
+              <p className="mt-1 text-[13px] leading-5 text-neutral-800 dark:text-neutral-200">
+                {state.critique.summary}
+              </p>
+            </div>
+          )}
           <p className="mt-2 text-xs leading-5 font-medium text-neutral-800 dark:text-neutral-200">
             {state.critique.verdict}
           </p>

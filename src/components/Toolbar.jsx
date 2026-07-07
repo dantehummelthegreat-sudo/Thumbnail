@@ -6,9 +6,12 @@ const VIEWS = [
   { id: 'compare', label: 'Compare' },
 ]
 
-function Segmented({ options, value, onChange }) {
+function Segmented({ options, value, onChange, accent = false }) {
+  const activeClass = accent
+    ? 'bg-gradient-to-r from-[#ff0033] to-[#ff5f00] text-white shadow-md shadow-red-500/25'
+    : 'bg-white text-neutral-900 shadow dark:bg-neutral-950 dark:text-neutral-50'
   return (
-    <div className="flex rounded-full bg-neutral-200 p-1 dark:bg-neutral-800">
+    <div className="flex rounded-full bg-neutral-200/80 p-1 dark:bg-neutral-800">
       {options.map((opt) => (
         <button
           key={opt.id}
@@ -18,7 +21,7 @@ function Segmented({ options, value, onChange }) {
           title={opt.hint}
           className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
             value === opt.id
-              ? 'bg-white text-neutral-900 shadow dark:bg-neutral-950 dark:text-neutral-50'
+              ? activeClass
               : opt.disabled
                 ? 'cursor-not-allowed text-neutral-400 dark:text-neutral-600'
                 : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
@@ -48,6 +51,7 @@ export default function Toolbar({
   return (
     <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-3">
       <Segmented
+        accent
         value={view}
         onChange={setView}
         options={VIEWS.map((v) =>
@@ -68,8 +72,8 @@ export default function Toolbar({
           title="Blurs every thumbnail to simulate a split-second glance from the corner of the eye — if yours still reads, it's strong."
           className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
             squint
-              ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black'
-              : 'bg-neutral-200 text-neutral-600 hover:text-neutral-900 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-100'
+              ? 'bg-gradient-to-r from-[#ff0033] to-[#ff5f00] text-white shadow-md shadow-red-500/25'
+              : 'bg-neutral-200/80 text-neutral-600 hover:text-neutral-900 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-100'
           }`}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-4" aria-hidden="true">

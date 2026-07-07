@@ -20,7 +20,10 @@ export default function ThumbCard({ thumb, index, count, updateThumb, removeThum
   const band = headline != null ? scoreBand(headline) : null
 
   return (
-    <div className="w-full max-w-[440px] min-w-0 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+    <div
+      className="w-full max-w-[440px] min-w-0 rounded-2xl border border-neutral-200 border-t-4 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-neutral-800 dark:border-t-4 dark:bg-neutral-900"
+      style={{ borderTopColor: band ? band.hex : 'transparent' }}
+    >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
           {count > 1 && (

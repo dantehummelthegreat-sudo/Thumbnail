@@ -14,17 +14,17 @@ function MainTab({ active, onClick, label, sub, icon }) {
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors ${
+      className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all ${
         active
-          ? 'border-neutral-900 bg-neutral-900 text-white shadow-sm dark:border-neutral-100 dark:bg-neutral-100 dark:text-black'
-          : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-neutral-100'
+          ? 'border-transparent bg-gradient-to-r from-[#ff0033] to-[#ff5f00] text-white shadow-lg shadow-red-500/25'
+          : 'border-neutral-200 bg-white text-neutral-600 hover:-translate-y-px hover:border-red-300 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-red-500/50 dark:hover:text-neutral-100'
       }`}
     >
       {icon}
       <span>{label}</span>
       <span
         className={`hidden text-xs font-normal sm:block ${
-          active ? 'text-neutral-400 dark:text-neutral-500' : 'text-neutral-400 dark:text-neutral-600'
+          active ? 'text-red-100' : 'text-neutral-400 dark:text-neutral-600'
         }`}
       >
         {sub}
@@ -78,20 +78,29 @@ export default function App() {
 
   return (
     <div className={theme === 'dark' ? 'dark' : ''}>
-      <div className="min-h-screen bg-neutral-100 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+      <div className="min-h-screen bg-[#faf6f3] text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+        <div className="h-1 bg-gradient-to-r from-[#ff0033] via-[#ff5f00] to-[#ffb800]" />
         <header className="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
           <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-4 sm:px-6">
             <div className="flex items-center gap-2">
-              <svg viewBox="0 0 28 28" className="size-7" aria-hidden="true">
-                <rect width="28" height="28" rx="7" fill="#FF0033" />
+              <svg viewBox="0 0 28 28" className="size-8 drop-shadow-[0_2px_6px_rgba(255,0,51,0.4)]" aria-hidden="true">
+                <defs>
+                  <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stopColor="#ff0033" />
+                    <stop offset="1" stopColor="#ff5f00" />
+                  </linearGradient>
+                </defs>
+                <rect width="28" height="28" rx="7" fill="url(#logo-g)" />
                 <path d="M11.5 8.5 20 14l-8.5 5.5z" fill="#fff" />
               </svg>
-              <span className="text-xl font-bold tracking-tight">ThumbTest</span>
+              <span className="bg-gradient-to-r from-[#ff0033] to-[#ff5f00] bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
+                ThumbTest
+              </span>
             </div>
             <p className="hidden text-sm text-neutral-500 sm:block dark:text-neutral-400">
               Score your YouTube thumbnails before you publish
             </p>
-            <span className="ml-auto flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+            <span className="ml-auto flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-500/30">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-3.5" aria-hidden="true">
                 <rect x="5" y="11" width="14" height="9" rx="2" />
                 <path d="M8 11V8a4 4 0 0 1 8 0v3" />

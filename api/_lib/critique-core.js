@@ -12,6 +12,7 @@ export const CRITIQUE_PROMPT = `You are a blunt, expert YouTube thumbnail coach.
 
 Return your critique as JSON with exactly these fields:
 - "score": integer 1-10, predicted click-through strength in a crowded feed
+- "summary": 2-3 blunt sentences forecasting how this thumbnail will likely perform — name specifically what will make it STAND OUT in the feed and what could make it FAIL
 - "verdict": one blunt sentence summarizing how this thumbnail will perform
 - "problems": array of short strings, the specific weaknesses (empty if none)
 - "fixes": array of short strings, the concrete highest-impact changes to make`
@@ -19,9 +20,13 @@ Return your critique as JSON with exactly these fields:
 const CRITIQUE_SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['score', 'verdict', 'problems', 'fixes'],
+  required: ['score', 'summary', 'verdict', 'problems', 'fixes'],
   properties: {
     score: { type: 'integer', description: 'Predicted click-through strength, 1 (weak) to 10 (strong)' },
+    summary: {
+      type: 'string',
+      description: '2-3 sentences: how it will likely perform — what makes it stand out, what could make it fail',
+    },
     verdict: { type: 'string', description: 'One blunt sentence on how this thumbnail will perform' },
     problems: { type: 'array', items: { type: 'string' } },
     fixes: { type: 'array', items: { type: 'string' } },

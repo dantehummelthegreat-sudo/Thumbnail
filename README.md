@@ -17,9 +17,11 @@ model via a small serverless function.
   video title and channel name for each.
 - **Overview tab** — every layout at once on one scrollable page.
 - **Four YouTube layouts**, styled to match YouTube's real proportions and
-  spacing (surrounding videos are gray placeholders with fake titles — no real
-  YouTube data is fetched): homepage grid, search results, watch-page
-  "Up next" sidebar, and the mobile feed.
+  spacing: homepage grid, search results, watch-page "Up next" sidebar, and
+  the mobile feed. The surrounding videos are filled from a bundled library of
+  ~100 generated placeholder thumbnails (gaming, vlog, cooking, tech, …) with
+  fake titles, shuffled on every page load — all local assets, no real YouTube
+  data and no network calls.
 - **Desktop / Mobile toggle** — see how readable your thumbnail is at phone size.
 - **Dark / Light mode toggle** — YouTube has both, so preview against both.
 - **Squint test** — blurs every thumbnail to simulate a split-second glance;
@@ -43,9 +45,11 @@ model via a small serverless function.
   layout previews with all their tabs. The upload strip stays visible in both.
 - **Side-by-side A/B compare** when you have more than one version.
 - **AI critique (optional)** — a "Get AI critique" button per thumbnail that
-  asks Claude for blunt, specific feedback (score, verdict, problems, fixes).
-  Works only when an API key is configured server-side; without one the button
-  shows a friendly "not set up yet" note and everything else works normally.
+  asks Claude for blunt, specific feedback: a 2–3 sentence "feed forecast"
+  summary (what will make it stand out, what could make it fail), plus a
+  score, verdict, problems, and fixes. Works only when an API key is
+  configured server-side; without one the button shows a friendly "not set up
+  yet" note and everything else works normally.
 
 ## Development
 

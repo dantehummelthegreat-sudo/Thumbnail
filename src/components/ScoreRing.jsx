@@ -30,6 +30,7 @@ export default function ScoreRing({ score, size = 136, stroke = 10 }) {
             strokeLinecap="round"
             strokeDasharray={`${filled} ${c}`}
             className="transition-[stroke-dasharray] duration-700 ease-out"
+            style={{ filter: `drop-shadow(0 0 8px ${band.hex}66)` }}
           />
         )}
       </svg>
