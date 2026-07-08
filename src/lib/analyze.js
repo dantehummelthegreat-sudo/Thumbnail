@@ -26,6 +26,39 @@ function levelOf(score) {
   return score >= 75 ? 'green' : score >= 50 ? 'yellow' : 'red'
 }
 
+// Plain-English one/two-sentence verdict built purely from the check scores —
+// no AI, no network, always available.
+const WEAK_PHRASES = {
+  contrast: 'contrast — it will blend into the feed instead of popping',
+  mobile: 'mobile readability — its detail gets lost at phone size',
+  edges: 'edge safety — important detail sits too close to the borders',
+  aspect: "aspect ratio — it isn't 16:9, so YouTube will crop it",
+}
+const STRONG_PHRASES = {
+  contrast: 'contrast',
+  mobile: 'mobile readability',
+  edges: 'its clean, safe borders',
+  aspect: 'its exact 16:9 fit',
+}
+
+export function summarizeChecks(checks) {
+  const sorted = [...checks].sort((a, b) => a.score - b.score)
+  const worst = sorted[0]
+  // "Strongest point": prefer a real design strength (contrast/mobile/edges);
+  // being 16:9 is table stakes, so only credit it when nothing else passes.
+  const design = sorted.filter((c) => c.id !== 'aspect')
+  const bestDesign = design[design.length - 1]
+  const best = bestDesign.score >= 75 ? bestDesign : sorted[sorted.length - 1]
+
+  if (worst.score >= 75) {
+    return `No major weaknesses — all four checks pass. Its strongest point is ${STRONG_PHRASES[best.id]}.`
+  }
+  if (best.score < 50) {
+    return `This thumbnail struggles across the board — the biggest problem is ${WEAK_PHRASES[worst.id]}. Even its best area, ${best.label.toLowerCase()}, needs work.`
+  }
+  return `This thumbnail's biggest weakness is ${WEAK_PHRASES[worst.id]}. Its strongest point is ${STRONG_PHRASES[best.id]}.`
+}
+
 // The 0–100 → band mapping used everywhere a score is displayed.
 export function scoreBand(score) {
   if (score >= 90)

@@ -1,3 +1,5 @@
+import { summarizeChecks } from '../lib/analyze'
+
 const DOT = {
   green: 'bg-emerald-500',
   yellow: 'bg-amber-400',
@@ -19,7 +21,16 @@ export default function ScoreCard({ result }) {
   }
 
   return (
-    <ul className="mt-3 flex flex-col gap-2.5">
+    <>
+      <div className="mt-3 rounded-r-lg border-l-4 border-sky-500 bg-sky-50/70 px-3 py-2 dark:bg-sky-500/10">
+        <div className="text-[10px] font-bold tracking-widest text-sky-600 uppercase dark:text-sky-400">
+          Quick verdict
+        </div>
+        <p className="mt-1 text-[13px] leading-5 text-neutral-800 dark:text-neutral-200">
+          {summarizeChecks(result.checks)}
+        </p>
+      </div>
+      <ul className="mt-3 flex flex-col gap-2.5">
       {result.checks.map((c) => (
         <li key={c.id} className="flex items-start gap-2.5">
           <span className={`mt-1 size-2.5 shrink-0 rounded-full ${DOT[c.level]}`} />
@@ -36,6 +47,7 @@ export default function ScoreCard({ result }) {
           </div>
         </li>
       ))}
-    </ul>
+      </ul>
+    </>
   )
 }
