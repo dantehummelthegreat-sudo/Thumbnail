@@ -4,32 +4,34 @@
 // never shipped to the browser.
 import Anthropic from '@anthropic-ai/sdk'
 
-// NOTE: this instruction was supplied by the project owner. Their original
-// message was cut off mid-sentence at "(5) does it create" — the remainder of
-// point (5) and the JSON-format footer below were filled in to match intent.
-// Edit this constant if the wording should differ.
-export const CRITIQUE_PROMPT = `You are a blunt, expert YouTube thumbnail coach. Analyze this thumbnail as it would perform in a crowded YouTube feed. Be specific and honest — never say generic things like 'looks good.' Evaluate: (1) is the text large and legible at small mobile size, (2) contrast between the subject and background, (3) is there a single clear focal point or is it cluttered, (4) if there's a face, is it expressive and uncropped, (5) does it create curiosity or an emotional hook strong enough to earn a click without being misleading.
-
-Return your critique as JSON with exactly these fields:
-- "score": integer 1-10, predicted click-through strength in a crowded feed
-- "summary": 2-3 blunt sentences forecasting how this thumbnail will likely perform — name specifically what will make it STAND OUT in the feed and what could make it FAIL
-- "verdict": one blunt sentence summarizing how this thumbnail will perform
-- "problems": array of short strings, the specific weaknesses (empty if none)
-- "fixes": array of short strings, the concrete highest-impact changes to make`
+// Instruction supplied by the project owner — edit this constant to tune it.
+export const CRITIQUE_PROMPT = `You are a blunt expert YouTube thumbnail coach. Analyze this thumbnail as it would perform in a crowded feed. Return JSON: { summary: a 2-3 sentence overview of how it will likely perform — specifically what will make it STAND OUT and what could make it FAIL; overall_score: 1-10; biggest_problem: string; fixes: [up to 3 specific action items]; strengths: [up to 2 items] }. Be specific — never say generic things like 'looks good.'`
 
 const CRITIQUE_SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['score', 'summary', 'verdict', 'problems', 'fixes'],
+  required: ['summary', 'overall_score', 'biggest_problem', 'fixes', 'strengths'],
   properties: {
-    score: { type: 'integer', description: 'Predicted click-through strength, 1 (weak) to 10 (strong)' },
     summary: {
       type: 'string',
-      description: '2-3 sentences: how it will likely perform — what makes it stand out, what could make it fail',
+      description:
+        '2-3 sentence overview of likely performance — what will make it STAND OUT and what could make it FAIL',
     },
-    verdict: { type: 'string', description: 'One blunt sentence on how this thumbnail will perform' },
-    problems: { type: 'array', items: { type: 'string' } },
-    fixes: { type: 'array', items: { type: 'string' } },
+    overall_score: {
+      type: 'integer',
+      description: 'Predicted click-through strength, 1 (weak) to 10 (strong)',
+    },
+    biggest_problem: { type: 'string', description: 'The single most damaging weakness' },
+    fixes: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'Up to 3 specific action items',
+    },
+    strengths: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'Up to 2 things that already work',
+    },
   },
 }
 

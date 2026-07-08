@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "thumbs": "node scripts/build-thumbnail-manifest.mjs",
+    "predev": "npm run thumbs",
+    "prebuild": "npm run thumbs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",

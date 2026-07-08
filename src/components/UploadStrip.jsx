@@ -92,9 +92,8 @@ export default function UploadStrip({ thumbs, addFiles, clearExamples }) {
       </div>
 
       <p className="mt-2 text-center text-xs text-neutral-500 dark:text-neutral-400">
-        Images are cropped to 16:9, exactly like on YouTube. Your images stay in your browser
-        (only an explicit AI critique sends one) — the surrounding feed shows real public
-        thumbnails loaded straight from YouTube.
+        Images are cropped to 16:9, exactly like on YouTube. Everything stays local — your
+        images never leave the browser unless you explicitly ask for an AI critique.
       </p>
     </section>
   )

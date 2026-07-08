@@ -1,6 +1,51 @@
 // Shared building blocks for the YouTube preview layouts.
 import { useSquint } from './SquintContext'
 
+// Polished stand-in art shown behind feed images while they load, and as the
+// final fallback when a slot has no image. Deterministic per slot seed.
+const ART = [
+  ['#3b0a6b', '#7a1fd0', '#ff2fd6'],
+  ['#0a3d62', '#1e7fc2', '#7bd5ff'],
+  ['#7a1c1c', '#d94f30', '#ffd166'],
+  ['#0b4a2f', '#1d9e63', '#a6f3c9'],
+  ['#4a2f8f', '#8a5adf', '#ffb6f9'],
+  ['#8a4a0b', '#e08214', '#ffe08a'],
+  ['#12333f', '#2a7f8a', '#9be8e0'],
+  ['#5c0e3f', '#c22a75', '#ffc2dd'],
+  ['#232358', '#4a4ad0', '#b3b3ff'],
+  ['#3d1f0e', '#8a5a2a', '#ecd3a3'],
+  ['#053225', '#0c5d4a', '#8be3c2'],
+  ['#4d0d18', '#a01d35', '#ff9e9e'],
+]
+
+function SlotArt({ seed = 0 }) {
+  const [c1, c2, accent] = ART[Math.abs(seed) % ART.length]
+  const flip = seed % 2 === 0
+  return (
+    <div
+      className="absolute inset-0"
+      style={{ background: `linear-gradient(${flip ? 125 : 235}deg, ${c1}, ${c2})` }}
+      aria-hidden="true"
+    >
+      <div
+        className="absolute rounded-full opacity-30"
+        style={{
+          background: accent,
+          width: '55%',
+          aspectRatio: '1',
+          top: flip ? '-20%' : '45%',
+          right: flip ? '-12%' : '60%',
+          filter: 'blur(6px)',
+        }}
+      />
+      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 p-3">
+        <div className="h-2.5 w-3/4 rounded-full bg-white/30" />
+        <div className="h-2.5 w-1/2 rounded-full bg-white/20" />
+      </div>
+    </div>
+  )
+}
+
 export function PhoneFrame({ children, height = 'h-[700px]' }) {
   return (
     <div className="flex justify-center">
@@ -30,16 +75,19 @@ export function Thumb({ item, rounded = 'rounded-xl', className = '' }) {
     <div
       className={`relative aspect-video overflow-hidden ${rounded} bg-neutral-200 dark:bg-neutral-800 ${className}`}
     >
+      {item.kind === 'ph' && <SlotArt seed={item.artSeed ?? 0} />}
       {item.url && (
         <img
           src={item.url}
           alt=""
           loading="lazy"
           onError={(e) => {
-            // hot-linked thumbnail unavailable (offline / video gone) →
-            // fall back to the bundled generated placeholder
+            // missing/unreadable image → try the generated fallback once,
+            // then hide the img so the slot art shows (never a broken icon)
             if (item.fallback && !e.currentTarget.src.endsWith(item.fallback)) {
               e.currentTarget.src = item.fallback
+            } else {
+              e.currentTarget.style.display = 'none'
             }
           }}
           className={`absolute inset-0 h-full w-full object-cover ${

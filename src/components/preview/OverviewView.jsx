@@ -1,5 +1,6 @@
 import { buildFeed } from '../../lib/placeholders'
 import { ChipRow, MobileHeader, PhoneFrame } from './parts'
+import { useNiche } from './NicheContext'
 import { SearchRow } from './SearchView'
 import { HomeCard, MobileFeed } from './HomeView'
 import { CompactRow } from './SidebarView'
@@ -18,11 +19,12 @@ function Section({ title, children }) {
 // Every layout on one scrollable page. Uploads sit adjacent (gap 1) so the
 // sections stay short.
 export default function OverviewView({ thumbs }) {
+  const niche = useNiche()
   const n = Math.max(1, thumbs.length)
-  const searchItems = buildFeed(thumbs, { count: n + 2, start: 1, gap: 1 })
-  const gridItems = buildFeed(thumbs, { count: Math.max(6, n + 3), start: 1, gap: 1 })
-  const sidebarItems = buildFeed(thumbs, { count: n + 3, start: 1, gap: 1 })
-  const mobileItems = buildFeed(thumbs, { count: n + 1, start: 1, gap: 1 })
+  const searchItems = buildFeed(thumbs, { count: n + 2, start: 1, gap: 1, niche })
+  const gridItems = buildFeed(thumbs, { count: Math.max(6, n + 3), start: 1, gap: 1, niche })
+  const sidebarItems = buildFeed(thumbs, { count: n + 3, start: 1, gap: 1, niche })
+  const mobileItems = buildFeed(thumbs, { count: n + 1, start: 1, gap: 1, niche })
 
   return (
     <div className="flex flex-col gap-10">

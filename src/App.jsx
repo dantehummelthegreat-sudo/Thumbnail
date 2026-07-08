@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import UploadStrip from './components/UploadStrip'
 import ThumbCard from './components/ThumbCard'
 import Toolbar from './components/Toolbar'
 import PreviewCanvas from './components/preview/PreviewCanvas'
 import { exampleThumbs } from './lib/examples'
+import { manifestReady } from './lib/nicheLibrary'
 
 const MAX_THUMBS = 3
 
@@ -42,6 +43,12 @@ export default function App() {
   const [device, setDevice] = useState('desktop')
   const [theme, setTheme] = useState('dark')
   const [squint, setSquint] = useState(false)
+  const [niche, setNiche] = useState('mixed')
+  // bump a render once the niche-image manifest has loaded
+  const [, setManifestLoaded] = useState(false)
+  useEffect(() => {
+    manifestReady.then(() => setManifestLoaded(true))
+  }, [])
 
   const addFiles = (fileList) => {
     const images = Array.from(fileList).filter((f) => f.type.startsWith('image/'))
@@ -78,7 +85,17 @@ export default function App() {
 
   return (
     <div className={theme === 'dark' ? 'dark' : ''}>
-      <div className="min-h-screen bg-[#faf6f3] text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+      <div className="relative min-h-screen bg-[#faf6f3] text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+        {/* ambient color wash */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
+          aria-hidden="true"
+          style={{
+            background:
+              'radial-gradient(600px 320px at 8% -4%, rgba(255,0,51,0.10), transparent 70%), radial-gradient(700px 380px at 96% 12%, rgba(255,95,0,0.08), transparent 70%), radial-gradient(800px 500px at 50% 110%, rgba(147,51,234,0.08), transparent 70%)',
+          }}
+        />
+        <div className="relative">
         <div className="h-1 bg-gradient-to-r from-[#ff0033] via-[#ff5f00] to-[#ffb800]" />
         <header className="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
           <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-4 sm:px-6">
@@ -177,18 +194,26 @@ export default function App() {
                 setTheme={setTheme}
                 squint={squint}
                 setSquint={setSquint}
+                niche={niche}
+                setNiche={setNiche}
                 compareEnabled={thumbs.length >= 2}
               />
-              <PreviewCanvas view={view} device={device} thumbs={thumbs} squint={squint} />
+              <PreviewCanvas
+                view={view}
+                device={device}
+                thumbs={thumbs}
+                squint={squint}
+                niche={niche}
+              />
             </section>
           )}
         </main>
 
         <footer className="pb-6 text-center text-xs text-neutral-500 dark:text-neutral-500">
-          ThumbTest runs in your browser — your images are only sent anywhere if you explicitly
-          request an AI critique. The surrounding feed hot-links public thumbnails from
-          YouTube&rsquo;s CDN. Not affiliated with YouTube.
+          ThumbTest runs fully in your browser with local images — yours are only sent anywhere
+          if you explicitly request an AI critique. Not affiliated with YouTube.
         </footer>
+        </div>
       </div>
     </div>
   )

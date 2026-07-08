@@ -1,5 +1,6 @@
 import { buildFeed } from '../../lib/placeholders'
 import { Thumb, Avatar, ChipRow } from './parts'
+import { useNiche } from './NicheContext'
 
 // Stacked full-width cards, shared by the mobile home feed and mobile search.
 export function MobileFeed({ items, chips = false }) {
@@ -60,7 +61,8 @@ export function HomeCard({ item }) {
 }
 
 export default function HomeView({ thumbs, mobile }) {
-  const items = buildFeed(thumbs, { count: 12, start: 1, gap: 4 })
+  const niche = useNiche()
+  const items = buildFeed(thumbs, { count: 12, start: 1, gap: 4, niche })
 
   if (mobile) return <MobileFeed items={items} chips />
 

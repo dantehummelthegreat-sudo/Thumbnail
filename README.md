@@ -18,13 +18,19 @@ model via a small serverless function.
 - **Overview tab** — every layout at once on one scrollable page.
 - **Four YouTube layouts**, styled to match YouTube's real proportions and
   spacing: homepage grid, search results, watch-page "Up next" sidebar, and
-  the mobile feed. The surrounding videos are real: thumbnails of well-known
-  videos hot-linked from YouTube's public CDN (`i.ytimg.com`) with their real
-  titles and channel names (from YouTube's oEmbed API), shuffled on every page
-  load. Nothing is bundled or re-hosted — the images load straight from
-  YouTube in the viewer's browser, and if one is unavailable (offline, video
-  removed) the slot falls back to a bundled generated placeholder. View
-  counts and durations in the feed remain invented.
+  the mobile feed. All feed titles, channels, view counts, and durations are
+  invented — no real YouTube data and no external network calls.
+- **Niche selector** — a "Niche" menu in the Context view fills the
+  surrounding feed from one of 13 niche image folders (or "Mixed", the
+  default, which pools all of them).
+- **Per-niche image folders** — drop your own feed images into
+  `public/thumbnails/<niche>/` (gaming, cooking, vlog, tech, fitness, beauty,
+  finance, education, travel, entertainment, comedy, story, truecrime; up to
+  ~100 per folder; 16:9 JPEG/WebP around 480×270 recommended). Run
+  `npm run thumbs` (or just restart `npm run dev` — it runs automatically) to
+  refresh the manifest; images shuffle per page load. Empty folders fall back
+  to the bundled generated placeholders, and slots render polished gradient
+  stand-ins while images load — never a broken image.
 - **Desktop / Mobile toggle** — see how readable your thumbnail is at phone size.
 - **Dark / Light mode toggle** — YouTube has both, so preview against both.
 - **Squint test** — blurs every thumbnail to simulate a split-second glance;
@@ -49,10 +55,11 @@ model via a small serverless function.
 - **Side-by-side A/B compare** when you have more than one version.
 - **AI critique (optional)** — a "Get AI critique" button per thumbnail that
   asks Claude for blunt, specific feedback: a 2–3 sentence "feed forecast"
-  summary (what will make it stand out, what could make it fail), plus a
-  score, verdict, problems, and fixes. Works only when an API key is
-  configured server-side; without one the button shows a friendly "not set up
-  yet" note and everything else works normally.
+  summary at the top (what will make it stand out, what could make it fail),
+  an overall score 1–10 (shown as ×10 and blended 50/50 into the headline
+  number), the biggest problem, up to 3 fixes, and up to 2 strengths. Works
+  only when an API key is configured server-side; without one the button
+  shows a friendly "not set up yet" note and everything else works normally.
 
 ## Development
 

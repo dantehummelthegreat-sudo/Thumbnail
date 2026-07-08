@@ -13,7 +13,9 @@ export default function ThumbCard({ thumb, index, count, updateThumb, removeThum
   const [critique, setCritique] = useState(null)
 
   const ruleScore = analysis && !analysis.error ? analysis.score : null
-  const aiScore = critique ? Math.max(0, Math.min(100, critique.score * 10)) : null
+  const aiScore = critique
+    ? Math.max(0, Math.min(100, critique.overall_score * 10))
+    : null
   // headline = rule-based score, blended 50/50 with the AI score once it exists
   const headline =
     ruleScore == null ? null : aiScore == null ? ruleScore : Math.round((ruleScore + aiScore) / 2)

@@ -1,20 +1,9 @@
-// Surrounding feed videos: real thumbnails hot-linked from YouTube's CDN
-// (validated video IDs in realThumbs.js), with the bundled generated library
-// as an automatic offline/broken-link fallback. View counts and durations
-// below remain invented — only the thumbnail, title, and channel are real.
+// Surrounding feed videos: images come from the local per-niche folders under
+// /public/thumbnails (see nicheLibrary.js), falling back to the bundled
+// generated library when a niche has no images yet. All titles, channels,
+// view counts, and durations below are invented — no real YouTube data.
 import { libraryThumb } from './library'
-import { REAL_VIDEOS, realThumbUrl } from './realThumbs'
-
-function shuffle(arr) {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
-// Shuffled once per page load — a different busy feed on every visit.
-const REAL_SHUFFLED = shuffle(REAL_VIDEOS)
+import { nicheThumb } from './nicheLibrary'
 
 export const PLACEHOLDER_VIDEOS = [
   {
@@ -158,23 +147,22 @@ function emptyItem() {
   }
 }
 
-// A feed of `count` items: library-filled placeholders with the user's uploads
+// A feed of `count` items: niche-image placeholders with the user's uploads
 // slotted in at spread-out positions (or one dashed empty slot before any
-// upload).
-export function buildFeed(thumbs, { count, start = 1, gap = 3 }) {
+// upload). `niche` selects which /public/thumbnails folder fills the slots.
+export function buildFeed(thumbs, { count, start = 1, gap = 3, niche = 'mixed' }) {
   const items = []
   for (let i = 0; i < count; i++) {
     const v = PLACEHOLDER_VIDEOS[i % PLACEHOLDER_VIDEOS.length]
-    const rv = REAL_SHUFFLED[i % REAL_SHUFFLED.length]
+    const nicheUrl = nicheThumb(niche, i)
     items.push({
       kind: 'ph',
       key: `ph-${i}`,
-      ...v, // fake meta / duration
-      url: realThumbUrl(rv.id),
-      fallback: libraryThumb(i),
-      title: rv.title,
-      channel: rv.channel,
-      desc: `Official upload from ${rv.channel}. Watch the full video on YouTube.`,
+      ...v,
+      // niche image if the folder has any; otherwise the generated library
+      url: nicheUrl ?? libraryThumb(i),
+      fallback: nicheUrl ? libraryThumb(i) : null,
+      artSeed: i,
     })
   }
   if (thumbs.length === 0) {

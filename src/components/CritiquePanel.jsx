@@ -61,18 +61,8 @@ export default function CritiquePanel({ thumb, onDone }) {
 
       {state.phase === 'done' && (
         <div className="rounded-lg bg-neutral-100 p-3 dark:bg-neutral-800">
-          <div className="flex items-center gap-2">
-            <span
-              className={`rounded px-1.5 py-0.5 text-[11px] font-bold text-white ${scoreBand(state.critique.score * 10).chip}`}
-            >
-              {state.critique.score * 10}/100
-            </span>
-            <span className="text-[11px] font-semibold tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
-              AI critique · {scoreBand(state.critique.score * 10).label}
-            </span>
-          </div>
           {state.critique.summary && (
-            <div className="mt-2 rounded-r-lg border-l-4 border-fuchsia-500 bg-fuchsia-50/70 px-3 py-2 dark:bg-fuchsia-500/10">
+            <div className="rounded-r-lg border-l-4 border-fuchsia-500 bg-fuchsia-50/70 px-3 py-2 dark:bg-fuchsia-500/10">
               <div className="text-[10px] font-bold tracking-widest text-fuchsia-600 uppercase dark:text-fuchsia-400">
                 Feed forecast
               </div>
@@ -81,28 +71,51 @@ export default function CritiquePanel({ thumb, onDone }) {
               </p>
             </div>
           )}
-          <p className="mt-2 text-xs leading-5 font-medium text-neutral-800 dark:text-neutral-200">
-            {state.critique.verdict}
-          </p>
-          {state.critique.problems?.length > 0 && (
-            <ul className="mt-2 flex flex-col gap-1">
-              {state.critique.problems.map((p, i) => (
-                <li key={i} className="flex gap-1.5 text-xs leading-4 text-neutral-600 dark:text-neutral-400">
-                  <span className="text-red-500">✕</span>
-                  <span className="min-w-0">{p}</span>
-                </li>
-              ))}
-            </ul>
+          <div className="mt-2.5 flex items-center gap-2">
+            <span
+              className={`rounded px-1.5 py-0.5 text-[11px] font-bold text-white ${scoreBand(state.critique.overall_score * 10).chip}`}
+            >
+              {state.critique.overall_score * 10}/100
+            </span>
+            <span className="text-[11px] font-semibold tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
+              AI critique · {scoreBand(state.critique.overall_score * 10).label}
+            </span>
+          </div>
+          {state.critique.biggest_problem && (
+            <p className="mt-2 text-xs leading-5 text-neutral-800 dark:text-neutral-200">
+              <span className="font-bold text-red-600 dark:text-red-400">Biggest problem: </span>
+              {state.critique.biggest_problem}
+            </p>
           )}
           {state.critique.fixes?.length > 0 && (
-            <ul className="mt-2 flex flex-col gap-1">
-              {state.critique.fixes.map((f, i) => (
-                <li key={i} className="flex gap-1.5 text-xs leading-4 text-neutral-600 dark:text-neutral-400">
-                  <span className="text-emerald-500">→</span>
-                  <span className="min-w-0">{f}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="mt-2">
+              <div className="text-[10px] font-bold tracking-widest text-neutral-400 uppercase dark:text-neutral-500">
+                Fixes
+              </div>
+              <ul className="mt-1 flex flex-col gap-1">
+                {state.critique.fixes.map((f, i) => (
+                  <li key={i} className="flex gap-1.5 text-xs leading-4 text-neutral-600 dark:text-neutral-400">
+                    <span className="text-amber-500">→</span>
+                    <span className="min-w-0">{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {state.critique.strengths?.length > 0 && (
+            <div className="mt-2">
+              <div className="text-[10px] font-bold tracking-widest text-neutral-400 uppercase dark:text-neutral-500">
+                Strengths
+              </div>
+              <ul className="mt-1 flex flex-col gap-1">
+                {state.critique.strengths.map((s, i) => (
+                  <li key={i} className="flex gap-1.5 text-xs leading-4 text-neutral-600 dark:text-neutral-400">
+                    <span className="text-emerald-500">✓</span>
+                    <span className="min-w-0">{s}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
           <button
             type="button"

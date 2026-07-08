@@ -1,6 +1,7 @@
 import { buildFeed } from '../../lib/placeholders'
 import { Thumb, Avatar } from './parts'
 import { MobileFeed } from './HomeView'
+import { useNiche } from './NicheContext'
 
 export function SearchRow({ item }) {
   return (
@@ -28,7 +29,8 @@ export function SearchRow({ item }) {
 }
 
 export default function SearchView({ thumbs, mobile }) {
-  const items = buildFeed(thumbs, { count: 8, start: 1, gap: 3 })
+  const niche = useNiche()
+  const items = buildFeed(thumbs, { count: 8, start: 1, gap: 3, niche })
 
   if (mobile) return <MobileFeed items={items} />
 

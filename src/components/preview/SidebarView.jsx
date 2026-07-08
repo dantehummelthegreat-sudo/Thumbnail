@@ -1,5 +1,6 @@
 import { buildFeed } from '../../lib/placeholders'
 import { Thumb } from './parts'
+import { useNiche } from './NicheContext'
 
 function PlayerPlaceholder({ mobile }) {
   return (
@@ -61,7 +62,8 @@ function WatchingInfo() {
 }
 
 export default function SidebarView({ thumbs, mobile }) {
-  const items = buildFeed(thumbs, { count: 10, start: 1, gap: 3 })
+  const niche = useNiche()
+  const items = buildFeed(thumbs, { count: 10, start: 1, gap: 3, niche })
 
   if (mobile) {
     return (
