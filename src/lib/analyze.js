@@ -59,6 +59,25 @@ export function summarizeChecks(checks) {
   return `This thumbnail's biggest weakness is ${WEAK_PHRASES[worst.id]}. Its strongest point is ${STRONG_PHRASES[best.id]}.`
 }
 
+// Actionable fixes for pillars that score low — rule-based, always available.
+const FIX_TEXT = {
+  contrast:
+    'Increase contrast between your subject and the background — add a darker/lighter outline or backdrop so it pops.',
+  mobile:
+    "Make your text larger and bolder, and cut extra words, so it's readable at small phone size.",
+  edges:
+    'Move your text and key elements away from the edges, toward the center safe zone, so nothing gets cropped.',
+  aspect: 'Re-export at 1280×720 (16:9) so it displays without cropping.',
+}
+
+// Pillars below the action threshold, worst first.
+export function fixesFor(checks) {
+  return checks
+    .filter((c) => c.score < 60)
+    .sort((a, b) => a.score - b.score)
+    .map((c) => ({ id: c.id, label: c.label, text: FIX_TEXT[c.id] }))
+}
+
 // The 0–100 → band mapping used everywhere a score is displayed.
 export function scoreBand(score) {
   if (score >= 90)

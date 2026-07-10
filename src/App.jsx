@@ -3,6 +3,7 @@ import UploadStrip from './components/UploadStrip'
 import ThumbCard from './components/ThumbCard'
 import Toolbar from './components/Toolbar'
 import PreviewCanvas from './components/preview/PreviewCanvas'
+import IntroBubble from './components/IntroBubble'
 import { exampleThumbs } from './lib/examples'
 import { manifestReady } from './lib/nicheLibrary'
 
@@ -198,6 +199,7 @@ export default function App() {
                 setNiche={setNiche}
                 compareEnabled={thumbs.length >= 2}
               />
+              <IntroBubble />
               <PreviewCanvas
                 view={view}
                 device={device}
