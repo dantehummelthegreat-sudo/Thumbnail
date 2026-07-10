@@ -1,4 +1,4 @@
-import { summarizeChecks, fixesFor } from '../lib/analyze'
+import { summarizeChecks, fixesFor, STRONG_OVERALL } from '../lib/analyze'
 
 const DOT = {
   green: 'bg-emerald-500',
@@ -27,7 +27,7 @@ export default function ScoreCard({ result }) {
           Quick verdict
         </div>
         <p className="mt-1 text-[13px] leading-5 text-neutral-800 dark:text-neutral-200">
-          {summarizeChecks(result.checks)}
+          {summarizeChecks(result.checks, result.score)}
         </p>
       </div>
       <ul className="mt-3 flex flex-col gap-2.5">
@@ -48,29 +48,45 @@ export default function ScoreCard({ result }) {
         </li>
       ))}
       </ul>
-      <FixItBox checks={result.checks} />
+      <FixItBox checks={result.checks} overall={result.score} />
     </>
   )
 }
 
-// "How to fix it" — actionable bullets for low-scoring pillars, or a positive
-// note when nothing needs work. Rule-based; works with no API key.
-function FixItBox({ checks }) {
+function FixList({ fixes, bulletClass }) {
+  return (
+    <ul className="mt-1.5 flex flex-col gap-1.5">
+      {fixes.map((f) => (
+        <li key={f.id} className="flex gap-2 text-xs leading-5 text-neutral-700 dark:text-neutral-300">
+          <span className={bulletClass}>•</span>
+          <span className="min-w-0">
+            <span className="font-semibold text-neutral-900 dark:text-neutral-100">{f.label}:</span>{' '}
+            {f.text}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+// "How to fix it" — respects the overall score. Strong thumbnails (80+) read
+// as strong: a positive note, with any remaining niggles framed as optional
+// polish. Only below that does the amber needs-work framing appear.
+// Rule-based; works with no API key.
+function FixItBox({ checks, overall }) {
   const fixes = fixesFor(checks)
-  const positive = fixes.length === 0
+  const strong = overall >= STRONG_OVERALL
   return (
     <div
       className={`mt-3 rounded-xl border p-3 ${
-        positive
+        strong
           ? 'border-emerald-300/60 bg-emerald-50/60 dark:border-emerald-500/30 dark:bg-emerald-500/10'
           : 'border-amber-300/60 bg-amber-50/60 dark:border-amber-500/30 dark:bg-amber-500/10'
       }`}
     >
       <div
         className={`flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase ${
-          positive
-            ? 'text-emerald-700 dark:text-emerald-400'
-            : 'text-amber-700 dark:text-amber-400'
+          strong ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400'
         }`}
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-3.5" aria-hidden="true">
@@ -78,24 +94,27 @@ function FixItBox({ checks }) {
         </svg>
         How to fix it
       </div>
-      {positive ? (
-        <p className="mt-1.5 text-xs leading-5 text-neutral-700 dark:text-neutral-300">
-          This thumbnail is strong — no major fixes needed.
-        </p>
+      {strong ? (
+        <>
+          <p className="mt-1.5 text-xs leading-5 text-neutral-700 dark:text-neutral-300">
+            This thumbnail is strong — no major fixes needed.
+          </p>
+          {fixes.length > 0 && (
+            <>
+              <div className="mt-2 text-[10px] font-semibold tracking-widest text-neutral-400 uppercase dark:text-neutral-500">
+                Optional polish
+              </div>
+              <FixList fixes={fixes} bulletClass="text-emerald-500" />
+            </>
+          )}
+        </>
+      ) : fixes.length > 0 ? (
+        <FixList fixes={fixes} bulletClass="text-amber-500" />
       ) : (
-        <ul className="mt-1.5 flex flex-col gap-1.5">
-          {fixes.map((f) => (
-            <li key={f.id} className="flex gap-2 text-xs leading-5 text-neutral-700 dark:text-neutral-300">
-              <span className="text-amber-500">•</span>
-              <span className="min-w-0">
-                <span className="font-semibold text-neutral-900 dark:text-neutral-100">
-                  {f.label}:
-                </span>{' '}
-                {f.text}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <p className="mt-1.5 text-xs leading-5 text-neutral-700 dark:text-neutral-300">
+          Solid thumbnail — no single pillar is failing. Small gains on its weakest checks would
+          push it into strong territory.
+        </p>
       )}
     </div>
   )
