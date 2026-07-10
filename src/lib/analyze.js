@@ -41,7 +41,19 @@ const STRONG_PHRASES = {
   aspect: 'its exact 16:9 fit',
 }
 
-export function summarizeChecks(checks) {
+// Softer, "minor tweak" phrasings for pillars that are merely good-not-great.
+const MINOR_PHRASES = {
+  contrast: 'a touch more contrast would make it pop even harder',
+  mobile: 'slightly bigger, bolder text would read even better on phones',
+  edges: 'watch edge safety — keep key elements a touch further from the borders',
+  aspect: 'a clean 16:9 export would avoid minor cropping',
+}
+
+// A thumbnail at or above this overall score is framed as strong: the verdict
+// leads with its strength, and remaining niggles read as optional polish.
+export const STRONG_OVERALL = 80
+
+export function summarizeChecks(checks, overall) {
   const sorted = [...checks].sort((a, b) => a.score - b.score)
   const worst = sorted[0]
   // "Strongest point": prefer a real design strength (contrast/mobile/edges);
@@ -49,6 +61,14 @@ export function summarizeChecks(checks) {
   const design = sorted.filter((c) => c.id !== 'aspect')
   const bestDesign = design[design.length - 1]
   const best = bestDesign.score >= 75 ? bestDesign : sorted[sorted.length - 1]
+
+  // Strong overall → lead with the strength, never with "biggest weakness".
+  if (overall >= STRONG_OVERALL) {
+    if (worst.score >= 75) {
+      return `This is a strong thumbnail — every check passes, led by ${STRONG_PHRASES[best.id]}.`
+    }
+    return `This is a strong thumbnail — ${STRONG_PHRASES[best.id]} carries it. Minor tweak: ${MINOR_PHRASES[worst.id]}.`
+  }
 
   if (worst.score >= 75) {
     return `No major weaknesses — all four checks pass. Its strongest point is ${STRONG_PHRASES[best.id]}.`
@@ -71,9 +91,9 @@ const FIX_TEXT = {
 }
 
 // Pillars below the action threshold, worst first.
-export function fixesFor(checks) {
+export function fixesFor(checks, threshold = 75) {
   return checks
-    .filter((c) => c.score < 60)
+    .filter((c) => c.score < threshold)
     .sort((a, b) => a.score - b.score)
     .map((c) => ({ id: c.id, label: c.label, text: FIX_TEXT[c.id] }))
 }
