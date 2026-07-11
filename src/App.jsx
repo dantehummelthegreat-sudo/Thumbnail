@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import UploadStrip from './components/UploadStrip'
 import ThumbCard from './components/ThumbCard'
 import Toolbar from './components/Toolbar'
@@ -86,6 +87,7 @@ export default function App() {
 
   return (
     <div className={theme === 'dark' ? 'dark' : ''}>
+      <Analytics />
       <div className="relative min-h-screen bg-[#faf6f3] text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
         {/* ambient color wash */}
         <div
